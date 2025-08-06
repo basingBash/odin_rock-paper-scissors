@@ -1,46 +1,67 @@
-let humanScore = 0;
-let computerScore = 0;
-playGame();
+document.addEventListener('DOMContentLoaded', () => {
+    const playerInput = document.querySelectorAll('.input');
+    const display = document.querySelector('div');
+    const playGame = document.querySelector('.playGame');
+    const para = document.querySelector('.rounds');
+    let humanScore = 0;
+    let computerScore = 0;
+    let rounds = 0;
+    playGame.disabled = true;
 
-
-function getComputerChoice() {
-    const computerRandom = Math.random();
-    if(computerRandom < 1 / 3) {
-        console.log('rock');
-        return 'rock';
-    } else if (computerRandom < 2 / 3) {
-        console.log('paper');
-        return 'paper';
-    } else {
-        console.log('scissors');
-        return 'scissors'
+    function computerChoice() {
+        const random = Math.random();
+        if (random < 1 / 3) {
+            return 'rock';
+        } else if (random < 2 / 3) {
+            return 'paper';
+        } else {
+            return 'scissors';
+        }
     }
-}
 
-function getHumanChoice() {
-    const playerChoice =  prompt('Move :', ).toLowerCase();
-    console.log(playerChoice);
-    return playerChoice;
-}
+    playGame.addEventListener('click', () => {
+        humanScore = 0;
+        computerScore = 0;
+        rounds = 0;
+        playGame.disabled = true;
+        playerInput.forEach((button) => button.disabled = false);
+        display.textContent = 'New Game Started!';
+    })
 
-function playRound(computerMove, playerMove) {
-    if(playerMove === computerMove) {
-        alert('its a draw');
-    } else if ((playerMove === 'rock' && computerMove === 'scissors') || (playerMove === 'scissors' && computerMove === 'paper') || (playerMove === 'paper' && computerMove === 'rock')) {
-        alert('Player Wins!');
-        humanScore++;
-    } else {
-        alert('Computer Wins!')
-        computerScore++;
+    function playRound(playerMove, computerMove) {
+        if(playerMove === computerMove) {
+            display.textContent = 'its a tie!'
+        } else if ((playerMove === 'rock' && computerMove === 'scissors') || (playerMove === 'scissors' && computerMove === 'paper') || (playerMove === 'paper' && computerMove === 'rock')){
+            humanScore++;
+            display.textContent = ' +1 point to the Player';
+        } else {
+            computerScore++;
+            display.textContent = ' +1 point to the Computer';
+        }
+        console.log(`Player : ${humanScore} | computer : ${computerScore}`);
+        rounds++;
     }
-}
-
-function playGame() {
-    const maxRound = 5;
-    for(let i = 0; i < maxRound; i++) {
-        const computerMove = getComputerChoice();
-        const playerMove = getHumanChoice();
-        playRound(computerMove, playerMove);
+    playerInput.forEach((button) => {
+        button.addEventListener('click', () => {
+            const playerMove = button.dataset.choice;
+            const computerMove = computerChoice();
+            playRound(playerMove, computerMove);
+            maxRounds();
+            
+        })
+    })
+    function maxRounds() {
+        if(rounds >= 5) {
+            playerInput.forEach((button) => button.disabled = true);
+            if(humanScore > computerScore) {
+                display.textContent = `Game Over: Player Wins!`
+            } else if (humanScore < computerScore){
+                display.textContent = `Game Over: Computer Wins!`
+            } else if (humanScore == computerScore) {
+                display.textContent = `Game Over: Its a Tie!`
+            }
+            playGame.disabled = false;
+        }
     }
-    console.log(`player score: ${humanScore}, Computer score: ${computerScore}`)
-}
+    
+})
